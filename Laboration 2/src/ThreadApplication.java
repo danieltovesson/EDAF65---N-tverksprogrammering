@@ -5,40 +5,71 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Stack;
 
-class ThreadExample extends Thread {
+class UrlStack extends Stack<URL> {
+
+	/**
+	 * Creates a UrlStack object
+	 * 
+	 * @param urls
+	 *            the URLs
+	 */
+	public UrlStack(List<URL> urls) {
+		for (int i = 0; i < urls.size(); i++) {
+			this.push(urls.get(i));
+		}
+	}
+
+	/**
+	 * Gets the top URL
+	 * 
+	 * @return the URL
+	 */
+	public synchronized URL getUrl() {
+		if (!this.empty()) {
+			return this.pop();
+		} else {
+			return null;
+		}
+	}
+}
+
+class Runner extends Thread {
 
 	// Variables
 	String threadName;
-	URL url;
+	UrlStack urlStack;
 
 	/**
-	 * Creates a TreadExample object
+	 * Creates a Runner object
 	 * 
 	 * @param threadName
 	 *            the thread name
+	 * @param urlStack
+	 *            the URL stack
 	 */
-	public ThreadExample(String threadName, URL url) {
+	public Runner(String threadName, UrlStack urlStack) {
 		this.threadName = threadName;
-		this.url = url;
+		this.urlStack = urlStack;
 	}
 
 	/**
 	 * Runs the program
 	 */
 	public void run() {
-		downloadLink(url);
+		while (!urlStack.isEmpty()) {
+			downloadLink();
+		}
 	}
 
 	/**
-	 * Downloads all the PDFs
-	 * 
-	 * @param links
-	 *            the PDF links
+	 * Downloads a PDF
 	 */
-	private synchronized void downloadLink(URL url) {
+	public synchronized void downloadLink() {
+
+		// Gets the URL
+		URL url = urlStack.getUrl();
 
 		InputStream in;
 		try {
@@ -102,23 +133,17 @@ public class ThreadApplication {
 			if (links != null) {
 				if (links.size() != 0) {
 
-					// Creates threads
-					ThreadExample[] threads = new ThreadExample[links.size()];
-					for (int i = 0; i < links.size(); i++) {
-						threads[i] = new ThreadExample("Thread " + (i + 1), links.get(i));
+					// Specifies the number of threads
+					int numThreads = 3;
+
+					// Creates a URL stack
+					UrlStack urlStack = new UrlStack(links);
+
+					// Creates threads and starts them
+					for (int i = 0; i < numThreads; i++) {
+						Runner thread = new Runner("Thread " + (i + 1), urlStack);
+						thread.start();
 					}
-
-					// Creates executor service that limits the number of active
-					// threads
-					ExecutorService service = Executors.newFixedThreadPool(3);
-
-					// Runs the threads
-					for (int i = 0; i < links.size(); i++) {
-						service.submit(threads[i]);
-					}
-
-					// Shutdown the executor service
-					service.shutdown();
 
 				} else {
 					System.out.println("No links found");
