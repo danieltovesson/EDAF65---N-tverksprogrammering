@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 class ThreadExample extends Thread {
 
@@ -18,19 +20,9 @@ class ThreadExample extends Thread {
 	 * @param threadName
 	 *            the thread name
 	 */
-	public ThreadExample(String threadName) {
+	public ThreadExample(String threadName, URL url) {
 		this.threadName = threadName;
-	}
-
-	/**
-	 * Starts the thread
-	 * 
-	 * @param url
-	 *            the URL to download
-	 */
-	public void start(URL url) {
 		this.url = url;
-		start();
 	}
 
 	/**
@@ -46,7 +38,7 @@ class ThreadExample extends Thread {
 	 * @param links
 	 *            the PDF links
 	 */
-	private void downloadLink(URL url) {
+	private synchronized void downloadLink(URL url) {
 
 		InputStream in;
 		try {
@@ -109,6 +101,24 @@ public class ThreadApplication {
 			// Download the PDFs
 			if (links != null) {
 				if (links.size() != 0) {
+
+					// Creates threads
+					ThreadExample[] threads = new ThreadExample[links.size()];
+					for (int i = 0; i < links.size(); i++) {
+						threads[i] = new ThreadExample("Thread " + (i + 1), links.get(i));
+					}
+
+					// Creates executor service that limits the number of active
+					// threads
+					ExecutorService service = Executors.newFixedThreadPool(3);
+
+					// Runs the threads
+					for (int i = 0; i < links.size(); i++) {
+						service.submit(threads[i]);
+					}
+
+					// Shutdown the executor service
+					service.shutdown();
 
 				} else {
 					System.out.println("No links found");
