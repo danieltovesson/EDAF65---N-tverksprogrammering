@@ -110,7 +110,7 @@ class Runner implements Runnable { // Part II
 	}
 }
 
-public class ThreadApplication {
+public class ThreadAndRunnableApplication {
 
 	public static void main(String[] args) {
 
