@@ -35,7 +35,10 @@ class UrlStack extends Stack<URL> {
 	}
 }
 
-class Runner extends Thread {
+/********** CHANGE THIS **********/
+// class Runner extends Thread { // Part I
+class Runner implements Runnable { // Part II
+/*********************************/
 
 	// Variables
 	String threadName;
@@ -141,8 +144,12 @@ public class ThreadApplication {
 
 					// Creates threads and starts them
 					for (int i = 0; i < numThreads; i++) {
-						Runner thread = new Runner("Thread " + (i + 1), urlStack);
-						thread.start();
+						Runner runner = new Runner("Thread " + (i + 1), urlStack);
+						/********** CHANGE THIS **********/
+						// runner.start(); // Part I
+						Thread thread = new Thread(runner); // Part II
+						thread.start(); // Part II
+						/*********************************/
 					}
 
 				} else {
