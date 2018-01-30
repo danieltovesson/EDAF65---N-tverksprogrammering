@@ -11,36 +11,37 @@ public class EchoTCP1 {
 
 	public static void main(String[] args) {
 
-		ServerSocket serverSocket;
-		try {
+		while (true) {
 
-			// Start connection
-			serverSocket = new ServerSocket(30000);
-			Socket clientSocket = serverSocket.accept();
-			InputStream is = clientSocket.getInputStream();
-			OutputStream os = clientSocket.getOutputStream();
-			BufferedReader in = new BufferedReader(new InputStreamReader(is));
-			PrintWriter out = new PrintWriter(os, true);
+			ServerSocket serverSocket;
+			try {
 
-			// Variables
-			String inputLine, outputLine;
+				// Start connection
+				serverSocket = new ServerSocket(30000);
+				Socket clientSocket = serverSocket.accept();
+				InputStream is = clientSocket.getInputStream();
+				OutputStream os = clientSocket.getOutputStream();
+				BufferedReader in = new BufferedReader(new InputStreamReader(is));
+				PrintWriter out = new PrintWriter(os, true);
 
-			// Initiate conversation with client
-			EchoProtocol ep = new EchoProtocol();
-			outputLine = ep.processInput(null);
-			out.println(outputLine);
+				// Variables
+				String inputLine, outputLine;
 
-			// Read lines
-			while ((inputLine = in.readLine()) != null) {
-				outputLine = ep.processInput(inputLine);
-				out.println(outputLine);
-				if (inputLine.equals("q")) {
-					break;
+				// Read lines
+				EchoProtocol ep = new EchoProtocol();
+				while ((inputLine = in.readLine()) != null) {
+					outputLine = ep.processInput(inputLine);
+					out.println(outputLine);
+					if (inputLine.equals("q")) {
+						clientSocket.close();
+						break;
+					}
 				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 }
