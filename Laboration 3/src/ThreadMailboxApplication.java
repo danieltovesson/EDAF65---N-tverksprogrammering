@@ -1,6 +1,6 @@
 
 // ANSWERS
-// Only one thread will run
+// It does not print all thread names
 
 public class ThreadMailboxApplication {
 
@@ -9,6 +9,10 @@ public class ThreadMailboxApplication {
 		// Create mailbox
 		Mailbox mailbox = new Mailbox();
 
+		// Create print mailbox thread and start it
+		PrintMailboxThread printMailboxThread = new PrintMailboxThread(mailbox);
+		printMailboxThread.start();
+		
 		// Create 10 mailbox threads and start them
 		Thread thread;
 		for (int i = 1; i <= 10; i++) {
@@ -16,9 +20,6 @@ public class ThreadMailboxApplication {
 			thread.start();
 		}
 
-		// Create print mailbox thread and start it
-		thread = new PrintMailboxThread(mailbox);
-		thread.start();
 	}
 }
 
