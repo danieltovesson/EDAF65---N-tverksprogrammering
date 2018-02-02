@@ -8,16 +8,20 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+// ANSWERS
+// netstat -a shows the active Internet connections, my server can be seen under protocol tcp6
+// Exception "Address already in use" is thrown. Can't connect to the same port twice
+
 public class EchoTCP2 {
 
 	public static void main(String[] args) {
 
 		try {
 
-			while (true) {
+			// Start server connection
+			ServerSocket serverSocket = new ServerSocket(24592);
 
-				// Start server connection
-				ServerSocket serverSocket = new ServerSocket(24592);
+			while (true) {
 
 				// Get client socket
 				Socket clientSocket = serverSocket.accept();
@@ -32,19 +36,9 @@ public class EchoTCP2 {
 				InetAddress inetAddress = clientSocket.getInetAddress();
 				out.println("Server: Connected to " + inetAddress.toString());
 
-				// Read lines
-				String inputLine, outputLine;
-				EchoProtocol ep = new EchoProtocol();
-				while ((inputLine = in.readLine()) != null) {
-					outputLine = ep.processInput(inputLine);
-					out.println("Server: " + outputLine);
-					out.flush();
-					if (inputLine.equals("q")) {
-						clientSocket.close();
-						serverSocket.close();
-						break;
-					}
-				}
+				// Start thread for new client connection
+				Thread serverThread = new ServerThread(serverSocket, clientSocket, in, out);
+				serverThread.start();
 
 			}
 

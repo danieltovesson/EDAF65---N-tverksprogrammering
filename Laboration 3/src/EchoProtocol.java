@@ -15,7 +15,9 @@ public class EchoProtocol {
 		if (input.startsWith("e ")) {
 			output = input.substring(2);
 		} else if (input.equals("q")) {
-			output = "Connection closed";
+			output = "Client connection closed";
+		} else if (input.equals("q server")) {
+			output = "Server connection closed";
 		} else {
 			output = "Whut?";
 		}
