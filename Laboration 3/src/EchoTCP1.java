@@ -17,10 +17,10 @@ public class EchoTCP1 {
 
 		try {
 
-			while (true) {
+			// Start server connection
+			ServerSocket serverSocket = new ServerSocket(24592);
 
-				// Start server connection
-				ServerSocket serverSocket = new ServerSocket(24592);
+			while (true) {
 
 				// Get client socket
 				Socket clientSocket = serverSocket.accept();
