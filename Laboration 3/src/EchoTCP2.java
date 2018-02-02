@@ -21,6 +21,9 @@ public class EchoTCP2 {
 			// Start server connection
 			ServerSocket serverSocket = new ServerSocket(24592);
 
+			// Count for separating clients
+			int count = 1;
+
 			while (true) {
 
 				// Get client socket
@@ -34,11 +37,14 @@ public class EchoTCP2 {
 
 				// Get client address and print it
 				InetAddress inetAddress = clientSocket.getInetAddress();
-				out.println("Server: Connected to " + inetAddress.toString());
+				out.println("Server: Connected to client " + count + " (" + inetAddress.toString() + ")");
 
 				// Start thread for new client connection
 				Thread serverThread = new ServerThread(serverSocket, clientSocket, in, out);
 				serverThread.start();
+
+				// Increment count for next client
+				count++;
 
 			}
 
