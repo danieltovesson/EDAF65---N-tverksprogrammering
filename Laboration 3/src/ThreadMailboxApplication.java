@@ -19,7 +19,6 @@ public class ThreadMailboxApplication {
 			thread = new MailboxThread("Thread " + i, mailbox);
 			thread.start();
 		}
-
 	}
 }
 
