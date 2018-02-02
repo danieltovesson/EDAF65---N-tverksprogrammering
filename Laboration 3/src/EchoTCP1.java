@@ -8,6 +8,9 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+// ANSWERS
+// Does not accept more than one client at a time, will get stuck in while-loop reading lines
+
 public class EchoTCP1 {
 
 	public static void main(String[] args) {
