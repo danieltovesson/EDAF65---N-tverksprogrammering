@@ -1,6 +1,7 @@
 
 // ANSWERS
-// It does not print all thread names
+// Before: It does not print all thread names
+// After: It prints more threads but still not all, wait() only affects current thread and no others
 
 public class ThreadMailboxApplication {
 
@@ -9,16 +10,16 @@ public class ThreadMailboxApplication {
 		// Create mailbox
 		Mailbox mailbox = new Mailbox();
 
-		// Create print mailbox thread and start it
-		PrintMailboxThread printMailboxThread = new PrintMailboxThread(mailbox);
-		printMailboxThread.start();
-		
 		// Create 10 mailbox threads and start them
 		Thread thread;
 		for (int i = 1; i <= 10; i++) {
 			thread = new MailboxThread("Thread " + i, mailbox);
 			thread.start();
 		}
+
+		// Create print mailbox thread and start it
+		PrintMailboxThread printMailboxThread = new PrintMailboxThread(mailbox);
+		printMailboxThread.start();
 	}
 }
 
@@ -33,8 +34,13 @@ class Mailbox {
 	 * @param message
 	 *            the message
 	 */
-	public void setMessage(String message) {
-		this.message = message;
+	public synchronized void setMessage(String message) {
+		try {
+			this.message = message;
+			wait();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -42,9 +48,10 @@ class Mailbox {
 	 * 
 	 * @return the message
 	 */
-	public String getMessage() {
+	public synchronized String getMessage() {
 		String temp = message;
 		message = null;
+		notifyAll();
 		return temp;
 	}
 }
@@ -108,8 +115,9 @@ class PrintMailboxThread extends Thread {
 		// Prints the mailbox message
 		while (true) {
 			try {
-				if (mailbox.getMessage() != null) {
-					System.out.println(mailbox.getMessage());
+				String message = mailbox.getMessage();
+				if (message != null) {
+					System.out.println(message);
 					sleep((int) Math.random());
 				}
 			} catch (InterruptedException e) {
