@@ -34,7 +34,7 @@ public class EchoTCP2 {
 		try {
 
 			// Start server connection
-			ServerSocket serverSocket = new ServerSocket(24592);
+			ServerSocket serverSocket = new ServerSocket(24593);
 
 			// Count for separating clients
 			int count = 1;
@@ -43,8 +43,8 @@ public class EchoTCP2 {
 			Mailbox mailbox = new Mailbox();
 
 			// Create print mailbox thread and start it
-			PrintMailboxThread printMailboxThread = new PrintMailboxThread(mailbox);
-			printMailboxThread.start();
+			ServerMailboxThread serverMailboxThread = new ServerMailboxThread(mailbox, users);
+			serverMailboxThread.start();
 
 			while (true) {
 
@@ -60,6 +60,7 @@ public class EchoTCP2 {
 				// Get client address and print it
 				InetAddress inetAddress = clientSocket.getInetAddress();
 				out.println("Server: Connected to client " + count + " (" + inetAddress.toString() + ")");
+				out.flush();
 
 				// Start thread for new client connection
 				Thread serverThread = new ServerThread(serverSocket, clientSocket, in, out, mailbox, users);
@@ -72,6 +73,44 @@ public class EchoTCP2 {
 
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+}
+
+class ServerMailboxThread extends Thread {
+
+	// Variables
+	private Mailbox mailbox;
+	private Vector<User> users;
+
+	/**
+	 * Creates a ServerMailboxThread object
+	 * 
+	 * @param mailbox
+	 *            the mailbox
+	 * @param users
+	 *            the users
+	 */
+	public ServerMailboxThread(Mailbox mailbox, Vector<User> users) {
+		this.mailbox = mailbox;
+		this.users = users;
+	}
+
+	/**
+	 * Runs the thread
+	 */
+	public void run() {
+
+		// Prints the mailbox message
+		while (true) {
+			String message = mailbox.getMessage();
+			if (message != null) {
+				for (User user : users) {
+					PrintWriter out = user.getPrintWriter();
+					out.println(message);
+					out.flush();
+				}
+			}
 		}
 	}
 }

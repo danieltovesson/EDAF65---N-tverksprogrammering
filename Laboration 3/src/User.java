@@ -1,19 +1,22 @@
+import java.io.PrintWriter;
 
 public class User {
 
 	// Variables
 	private static int userCounter = 0;
 	private int id;
+	private PrintWriter out;
 
 	/**
 	 * Creates a User object
 	 * 
-	 * @param name
-	 *            the name of the user
+	 * @param out
+	 *            the print writer of the users socket
 	 */
-	public User() {
+	public User(PrintWriter out) {
 		userCounter++;
 		id = userCounter;
+		this.out = out;
 	}
 
 	/**
@@ -23,5 +26,14 @@ public class User {
 	 */
 	public String getName() {
 		return "User " + id;
+	}
+
+	/**
+	 * Gets the print writer of the users socket
+	 * 
+	 * @return the print writer of the users socket
+	 */
+	public PrintWriter getPrintWriter() {
+		return out;
 	}
 }

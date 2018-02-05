@@ -86,7 +86,7 @@ public class ServerThread extends Thread {
 	 * Adds the user to vector with active users
 	 */
 	private synchronized void addUser() {
-		user = new User();
+		user = new User(out);
 		users.add(user);
 	}
 
