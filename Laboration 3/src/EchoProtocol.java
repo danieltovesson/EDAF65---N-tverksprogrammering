@@ -1,6 +1,9 @@
 
 public class EchoProtocol {
 
+	// Variables
+	public static final String UNKNOWN = "Whut?";
+
 	/**
 	 * Process the input from a client
 	 * 
@@ -14,12 +17,14 @@ public class EchoProtocol {
 		String output = null;
 		if (input.startsWith("e ")) {
 			output = input.substring(2);
+		} else if (input.startsWith("m ")) {
+			output = input.substring(2);
 		} else if (input.equals("q")) {
 			output = "Client connection closed";
 		} else if (input.equals("q server")) {
 			output = "Server connection closed";
 		} else {
-			output = "Whut?";
+			output = UNKNOWN;
 		}
 		return output;
 	}

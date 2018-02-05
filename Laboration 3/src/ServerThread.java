@@ -3,6 +3,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Vector;
 
 public class ServerThread extends Thread {
 
@@ -11,6 +14,9 @@ public class ServerThread extends Thread {
 	private Socket clientSocket;
 	private BufferedReader in;
 	private PrintWriter out;
+	private Mailbox mailbox;
+	private Vector<User> users;
+	private User user;
 
 	/**
 	 * Creates a ServerThread object
@@ -23,18 +29,28 @@ public class ServerThread extends Thread {
 	 *            the input from the client
 	 * @param out
 	 *            the output from the server
+	 * @param mailbox
+	 *            the mailbox
+	 * @param users
+	 *            the users
 	 */
-	public ServerThread(ServerSocket serverSocket, Socket clientSocket, BufferedReader in, PrintWriter out) {
+	public ServerThread(ServerSocket serverSocket, Socket clientSocket, BufferedReader in, PrintWriter out,
+			Mailbox mailbox, Vector<User> users) {
 		this.serverSocket = serverSocket;
 		this.clientSocket = clientSocket;
 		this.in = in;
 		this.out = out;
+		this.mailbox = mailbox;
+		this.users = users;
 	}
 
 	/**
 	 * Runs the thread
 	 */
 	public void run() {
+
+		// Adds user to the vector
+		addUser();
 
 		try {
 
@@ -43,12 +59,19 @@ public class ServerThread extends Thread {
 			EchoProtocol ep = new EchoProtocol();
 			while ((inputLine = in.readLine()) != null) {
 				outputLine = ep.processInput(inputLine);
-				out.println("Server: " + outputLine);
-				out.flush();
+				if (inputLine.startsWith("e ") || outputLine.equals(EchoProtocol.UNKNOWN)) {
+					out.println("Server: " + outputLine);
+					out.flush();
+				} else {
+					String timestamp = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss").format(new Date());
+					mailbox.setMessage(timestamp + " " + user.getName() + ": " + outputLine);
+				}
 				if (inputLine.equals("q")) {
+					removeUser();
 					clientSocket.close();
 					break;
 				} else if (inputLine.equals("q server")) {
+					removeAllUsers();
 					serverSocket.close();
 					break;
 				}
@@ -57,5 +80,27 @@ public class ServerThread extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Adds the user to vector with active users
+	 */
+	private synchronized void addUser() {
+		user = new User();
+		users.add(user);
+	}
+
+	/**
+	 * Removes the user
+	 */
+	private synchronized void removeUser() {
+		users.remove(user);
+	}
+
+	/**
+	 * Removes all users
+	 */
+	private synchronized void removeAllUsers() {
+		users.clear();
 	}
 }

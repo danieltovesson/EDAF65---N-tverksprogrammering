@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Vector;
 
 // ANSWERS
 // netstat -a shows the active Internet connections, my server can be seen under protocol tcp6
@@ -14,7 +15,21 @@ import java.net.Socket;
 
 public class EchoTCP2 {
 
+	// Variables
+	private Vector<User> users;
+
 	public static void main(String[] args) {
+		EchoTCP2 a = new EchoTCP2();
+		a.run();
+	}
+
+	/**
+	 * Runs the program
+	 */
+	private void run() {
+
+		// Initialize users vector
+		users = new Vector<User>();
 
 		try {
 
@@ -23,6 +38,13 @@ public class EchoTCP2 {
 
 			// Count for separating clients
 			int count = 1;
+
+			// Create mailbox
+			Mailbox mailbox = new Mailbox();
+
+			// Create print mailbox thread and start it
+			PrintMailboxThread printMailboxThread = new PrintMailboxThread(mailbox);
+			printMailboxThread.start();
 
 			while (true) {
 
@@ -40,7 +62,7 @@ public class EchoTCP2 {
 				out.println("Server: Connected to client " + count + " (" + inetAddress.toString() + ")");
 
 				// Start thread for new client connection
-				Thread serverThread = new ServerThread(serverSocket, clientSocket, in, out);
+				Thread serverThread = new ServerThread(serverSocket, clientSocket, in, out, mailbox, users);
 				serverThread.start();
 
 				// Increment count for next client
