@@ -36,8 +36,11 @@ class Mailbox {
 	 */
 	public synchronized void setMessage(String message) {
 		try {
+			while (this.message != null) {
+				wait();
+			}
 			this.message = message;
-			wait();
+			notifyAll();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -49,10 +52,18 @@ class Mailbox {
 	 * @return the message
 	 */
 	public synchronized String getMessage() {
-		String temp = message;
-		message = null;
-		notifyAll();
-		return temp;
+		try {
+			while (this.message == null) {
+				wait();
+			}
+			String temp = message;
+			message = null;
+			notifyAll();
+			return temp;
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }
 
