@@ -66,13 +66,13 @@ public class WebCrawlerApplication {
 			try {
 				PrintWriter writer = new PrintWriter("result.txt", "UTF-8");
 				writer.println("--------------------------------------------------");
-				writer.println("List of URLs:");
+				writer.println("List of URLs (" + urls.size() + "):");
 				writer.println("--------------------------------------------------");
 				for (String url : urls) {
 					writer.println(url);
 				}
 				writer.println("--------------------------------------------------");
-				writer.println("List of addresses:");
+				writer.println("List of addresses(" + addresses.size() + "):");
 				writer.println("--------------------------------------------------");
 				for (String address : addresses) {
 					writer.println(address);
