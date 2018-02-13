@@ -12,7 +12,8 @@
         done
       </label>
     </div>
-    <button  type="submit" (click)="newTodo()" class="btn btn-success">add new</button>
+    <button  type="submit" (click)="newTodo()" class="btn btn-success" *ngIf=!todo.id>add new</button>
+    <button  type="submit" (click)="updateTodo()" class="btn btn-success" *ngIf=todo.id>update</button>
   </form>
 
   <!-- TODO remove debug print -->

@@ -1,11 +1,12 @@
 (function(app) {
-
   app.DataService = DataService;
   function DataService() {
-    this.myList = [{text: "make a list", done: true},
-                   {text: "print the list", done: true},
-                   {text: "create a service", done: true},
-                   {text: "add more functionality...", done: false}];
+    this.myList = [
+      { text: "make a list", done: true },
+      { text: "print the list", done: true },
+      { text: "create a service", done: true },
+      { text: "add more functionality...", done: false }
+    ];
   }
 
   DataService.prototype.getTODOs = function() {
@@ -16,4 +17,7 @@
     this.myList.push(todo);
   };
 
-})(window.app = window.app || {});
+  DataService.prototype.updateTodo = function(i, todo) {
+    this.myList[i] = todo;
+  };
+})((window.app = window.app || {}));

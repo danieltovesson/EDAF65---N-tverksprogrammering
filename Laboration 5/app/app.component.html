@@ -1,7 +1,17 @@
+<nav class="navbar navbar-default">
+ <div class="container-fluid">
+   <div class="navbar-header">
+     <a class="navbar-brand" routerLink="/" routerLinkActive="active">TODO</a>
+   </div>
+   <ul class="nav navbar-nav">
+     <li routerLinkActive="active"><a routerLink="/list">lista</a></li>
+     <li routerLinkActive="active"><a routerLink="/todo">ny</a></li>
+   </ul>
+ </div>
+</nav>
+
 <div class="container well">
   <h1>Lab 5, the TODO list</h1>
 </div>
 
-<todo-list></todo-list>
-
-<todo></todo>
+<router-outlet></router-outlet>

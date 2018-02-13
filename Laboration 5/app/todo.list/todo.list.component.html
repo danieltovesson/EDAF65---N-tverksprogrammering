@@ -3,7 +3,7 @@
 </div>
 
 <ul class="list-group">
-  <li *ngFor="let item of myList" class="list-group-item">
+  <li *ngFor="let item of myList; let i = index;" class="list-group-item" (click)="viewTodo(i)">
     <table class="table">
       <tbody>
         <tr>
