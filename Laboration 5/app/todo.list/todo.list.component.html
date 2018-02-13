@@ -3,5 +3,14 @@
 </div>
 
 <ul class="list-group">
-  <li *ngFor="let item of myList" class="list-group-item"> {{item.text}} </li>
+  <li *ngFor="let item of myList" class="list-group-item">
+    <table class="table">
+      <tbody>
+        <tr>
+          <td class="col-md-3">{{item.text}}</td>
+          <td class="col-md-2" *ngIf=item.done><span class="glyphicon glyphicon-check"></span></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
 </ul>
