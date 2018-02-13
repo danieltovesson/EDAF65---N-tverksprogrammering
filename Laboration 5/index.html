@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>document.write('<base href="' + document.location + '" />');</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+    <title>Lab 5</title>
+
+    <script src="https://unpkg.com/core-js/client/shim.min.js"></script>
+    <script src="https://unpkg.com/zone.js@0.8.4?main=browser"></script>
+
+    <!-- Angular and RxJS umd scripts -->
+    <script src="https://unpkg.com/rxjs@5.0.1/bundles/Rx.js"></script>
+    <script src="https://unpkg.com/@angular/core@4.1.0/bundles/core.umd.js"></script>
+    <script src="https://unpkg.com/@angular/common@4.1.0/bundles/common.umd.js"></script>
+    <script src="https://unpkg.com/@angular/compiler@4.1.0/bundles/compiler.umd.js"></script>
+    <script src="https://unpkg.com/@angular/platform-browser@4.1.0/bundles/platform-browser.umd.js"></script>
+    <script src="https://unpkg.com/@angular/platform-browser-dynamic@4.1.0/bundles/platform-browser-dynamic.umd.js"></script>
+    <script src="https://unpkg.com/@angular/forms@4.1.0/bundles/forms.umd.js"></script>
+
+    <!-- Application scripts -->
+    <!-- Application services -->
+    <script src="app/data.service.js"></script>
+
+    <!-- Application components -->
+    <script src="app/app.component.js"></script>
+
+    <!-- Application compilation and bootstraping angular -->
+    <script src="app/app.module.js"></script>
+    <script src="main.js"></script>
+
+    <!-- Bootstrap CSS style -->
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+  </head>
+
+  <body>
+    <my-app>Loading...</my-app>
+  </body>
+
+</html>
