@@ -1,0 +1,20 @@
+<div class="container well">
+  <h1>TODO</h1>
+  <form>
+    <div class="form-group">
+      <label for="text">text</label>
+      <input required class="form-control col-xs-4"
+             type=text [(ngModel)]="todo.text" name="text" id="text">
+    </div>
+    <div class="form-group">
+      <label>
+        <input type="checkbox" [(ngModel)]="todo.done" name="done" value="done">
+        done
+      </label>
+    </div>
+    <button  type="submit" (click)="newTodo()" class="btn btn-success">add new</button>
+  </form>
+
+  <!-- TODO remove debug print -->
+  todo = {{todo|json}}
+</div>
