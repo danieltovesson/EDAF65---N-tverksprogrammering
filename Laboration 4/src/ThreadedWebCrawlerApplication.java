@@ -5,9 +5,9 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,10 +19,10 @@ import org.jsoup.select.Elements;
 public class ThreadedWebCrawlerApplication {
 
 	// Variables
-	private List<String> remainingUrls;
-	private List<String> traversedUrls;
-	private List<String> pendingUrls;
-	private List<String> addresses;
+	private Set<String> remainingUrls;
+	private Set<String> traversedUrls;
+	private Set<String> urls;
+	private Set<String> addresses;
 
 	public static void main(String[] args) {
 		ThreadedWebCrawlerApplication a = new ThreadedWebCrawlerApplication();
@@ -38,10 +38,10 @@ public class ThreadedWebCrawlerApplication {
 		while (true) {
 
 			// Initiate list with all URLs
-			remainingUrls = new ArrayList<String>();
-			traversedUrls = new ArrayList<String>();
-			pendingUrls = new ArrayList<String>();
-			addresses = new ArrayList<String>();
+			remainingUrls = new HashSet<String>();
+			traversedUrls = new HashSet<String>();
+			urls = new HashSet<String>();
+			addresses = new HashSet<String>();
 
 			// Get user input from console
 			System.out.println("Type URL: ");
@@ -59,14 +59,14 @@ public class ThreadedWebCrawlerApplication {
 
 			// Add user input to URLs
 			remainingUrls.add(s);
-			while (traversedUrls.size() < 1000) {
+			while (urls.size() < 1000) {
 
 				// Creates and runs the threads
-				ExecutorRunner task = new ExecutorRunner(remainingUrls, traversedUrls, pendingUrls, addresses);
+				ExecutorRunner task = new ExecutorRunner(remainingUrls, traversedUrls, urls, addresses);
 				service.submit(task);
 
 				// Break if there are no remaining or pending URLs
-				if (remainingUrls.isEmpty() && pendingUrls.isEmpty()) {
+				if (remainingUrls.isEmpty()) {
 					break;
 				}
 			}
@@ -78,9 +78,9 @@ public class ThreadedWebCrawlerApplication {
 			try {
 				PrintWriter writer = new PrintWriter("result.txt", "UTF-8");
 				writer.println("--------------------------------------------------");
-				writer.println("List of URLs (" + traversedUrls.size() + "):");
+				writer.println("List of URLs (" + urls.size() + "):");
 				writer.println("--------------------------------------------------");
-				for (String url : traversedUrls) {
+				for (String url : urls) {
 					writer.println(url);
 				}
 				writer.println("--------------------------------------------------");
@@ -102,10 +102,10 @@ public class ThreadedWebCrawlerApplication {
 class ExecutorRunner extends Thread {
 
 	// Variables
-	private List<String> remainingUrls;
-	private List<String> traversedUrls;
-	private List<String> pendingUrls;
-	private List<String> addresses;
+	private Set<String> remainingUrls;
+	private Set<String> traversedUrls;
+	private Set<String> urls;
+	private Set<String> addresses;
 
 	/**
 	 * Creates a ExecutorRunner object
@@ -115,11 +115,11 @@ class ExecutorRunner extends Thread {
 	 * @param url
 	 *            the URL
 	 */
-	public ExecutorRunner(List<String> remainingUrls, List<String> traversedUrls, List<String> pendingUrls,
-			List<String> addresses) {
+	public ExecutorRunner(Set<String> remainingUrls, Set<String> traversedUrls, Set<String> urls,
+			Set<String> addresses) {
 		this.remainingUrls = remainingUrls;
 		this.traversedUrls = traversedUrls;
-		this.pendingUrls = pendingUrls;
+		this.urls = urls;
 		this.addresses = addresses;
 	}
 
@@ -127,16 +127,17 @@ class ExecutorRunner extends Thread {
 	 * Runs the program
 	 */
 	public void run() {
-		fetchUrls();
+		fetchUrls(getUrl());
 	}
 
 	/**
 	 * Fetch URLs on a specific URL
 	 */
-	private void fetchUrls() {
+	private void fetchUrls(String urlString) {
 
-		// Get URL string
-		String urlString = getUrl();
+		if (urlString == null) {
+			return;
+		}
 
 		try {
 
@@ -177,32 +178,29 @@ class ExecutorRunner extends Thread {
 
 					// Sort addresses and URLs into different arrays
 					if (s.startsWith("mailto:")) {
-						if (!addresses.contains(s)) {
-							addresses.add(s);
-						}
-					} else if (s != "") {
-						if (!remainingUrls.contains(s) && !traversedUrls.contains(s)) {
-							remainingUrls.add(s);
-						}
+						addresses.add(s);
+					} else if (s != "" && !traversedUrls.contains(s)) {
+						remainingUrls.add(s);
 					}
 
-					is.close();
 				}
 
-				if (!traversedUrls.contains(urlString)) {
-					traversedUrls.add(urlString);
-				}
-				pendingUrls.remove(urlString);
+				// Close stream
+				is.close();
+
+				// Add to URLs
+				urls.add(urlString);
 
 			} else {
-				pendingUrls.remove(urlString);
 				System.out.println("URL does not contain any text (" + urlString + ")");
 			}
 
 		} catch (IOException e) {
-			pendingUrls.remove(urlString);
 			System.out.println("Error fetching URL: " + e.getMessage() + " (" + urlString + ")");
 		}
+
+		// Remove from remaining URLs
+		remainingUrls.remove(urlString);
 	}
 
 	/**
@@ -211,9 +209,12 @@ class ExecutorRunner extends Thread {
 	 * @return the URL
 	 */
 	private synchronized String getUrl() {
-		String temp = remainingUrls.get(0);
-		remainingUrls.remove(0);
-		pendingUrls.add(temp);
-		return temp;
+		for (String url : remainingUrls) {
+			if (!traversedUrls.contains(url)) {
+				traversedUrls.add(url);
+				return url;
+			}
+		}
+		return null;
 	}
 }
