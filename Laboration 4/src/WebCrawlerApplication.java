@@ -54,8 +54,7 @@ public class WebCrawlerApplication {
 			while (urls.size() < 1000) {
 
 				// Fetch URLs on URL
-				List<String> matches = fetchUrls(urls.get(i));
-				urls.addAll(matches);
+				fetchUrls(urls.get(i));
 				i++;
 				if (i == urls.size()) {
 					break;
@@ -94,10 +93,7 @@ public class WebCrawlerApplication {
 	 * @return the list with URLs
 	 * @throws IOException
 	 */
-	private List<String> fetchUrls(String urlString) {
-
-		// Initiate list with URLs
-		List<String> matches = new ArrayList<String>();
+	private void fetchUrls(String urlString) {
 
 		try {
 
@@ -157,7 +153,5 @@ public class WebCrawlerApplication {
 		} catch (IOException e) {
 			System.out.println("Error fetching URL: " + e.getMessage() + " (" + urlString + ")");
 		}
-
-		return matches;
 	}
 }
