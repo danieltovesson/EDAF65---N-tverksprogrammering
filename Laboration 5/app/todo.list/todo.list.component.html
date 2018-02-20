@@ -1,16 +1,16 @@
 <div class="container well">
   <h1>Things to do</h1>
-</div>
 
-<ul class="list-group">
-  <li *ngFor="let item of myList; let i = index;" class="list-group-item" (click)="viewTodo(i)">
-    <table class="table">
-      <tbody>
-        <tr>
-          <td class="col-md-3">{{item.text}}</td>
-          <td class="col-md-2" *ngIf=item.done><span class="glyphicon glyphicon-check"></span></td>
-        </tr>
-      </tbody>
-    </table>
-  </li>
-</ul>
+  <ul class="list-group">
+    <li *ngFor="let item of myList; let i = index;" class="list-group-item" (click)="viewTodo(i)">
+      <table class="table">
+        <tbody>
+          <tr>
+            <td class="col-md-3">{{item.text}}</td>
+            <td class="col-md-2" *ngIf=item.done><span class="glyphicon glyphicon-check"></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </li>
+  </ul>
+</div>
